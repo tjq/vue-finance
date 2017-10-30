@@ -4,6 +4,17 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Element from 'element-ui'
+	
+import VueHighcharts from 'vue-highcharts';
+import Highcharts from 'highcharts';
+
+import loadStock from 'highcharts/modules/stock';
+import loadMap from 'highcharts/modules/map';
+
+loadStock(Highcharts);
+loadMap(Highcharts);
+
+Vue.use(VueHighcharts, { Highcharts });
 
 Vue.use(Element)
 Vue.config.productionTip = false

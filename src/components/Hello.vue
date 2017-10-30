@@ -4,11 +4,11 @@
 			<el-aside width="200px">
 				<h1> vue-finance </h1>
 				<el-input v-model="ticker"> </el-input>
-				<el-button :type="text" @click="getTickerJSON()">Load</el-button>
+				<el-button type="text" @click="getTickerJSON()">Load</el-button>
 			</el-aside>
 			
 			<el-main>
-				<h2>{{highChartsData}}</h2>
+				<highstock :options="options"></highstock>
 			</el-main>
 			
 		</el-container>
@@ -21,14 +21,35 @@
 
 <script>
 import axios from 'axios';
-
+import VueHighcharts from 'vue-highcharts';
+import Highcharts from 'highcharts';
+	
 export default {
+	components: {
+		VueHighcharts
+	},
 	name: 'hello',
   data () {
     return {
       ticker: '',
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
-			highChartsData : []
+			highChartsData : [],
+			options: {
+				rangeSelector: {
+            selected: 1
+        },
+
+        title: {
+            text: ''
+        },
+
+        series: [{
+            name: 'Test',
+            data: [],
+            tooltip: {
+                valueDecimals: 2
+            }
+        }]}
     }
   },
     
@@ -41,6 +62,13 @@ export default {
 				this.highChartsData = response.data.dataset_data.data.map(function(d){
 					return [new Date(d[0]).getTime(), d[4]];
 				});
+				
+				// for some reason this comes in backwards ?
+				// highcharts wants it sorted
+				this.options.series[0].data = this.highChartsData.reverse();
+				// this.options.series.data = this.highChartsData;
+				console.log(this.highChartsData)
+				console.log(this.options.series[0].data)
 			})
 		}
 		

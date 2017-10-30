@@ -12,7 +12,9 @@
   "dependencies": {
     "axios": "^0.17.0",
     "element-ui": "^2.0.1",
+    "highcharts": "^6.0.2",
     "vue": "^2.5.2",
+    "vue-highcharts": "0.0.10",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
