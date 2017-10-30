@@ -2,12 +2,12 @@
   <div class="hello">
 		<el-container>
 			<el-aside width="200px">
-				<h1> vue-finance </h1>
+				<h1> Enter a ticker </h1>
 				<el-input v-model="ticker"> </el-input>
 				<el-button type="text" @click="getTickerJSON()">Load</el-button>
 			</el-aside>
 			
-			<el-main>
+			<el-main v-loading="loading">
 				<highstock :options="options"></highstock>
 			</el-main>
 			
@@ -31,8 +31,9 @@ export default {
 	name: 'hello',
   data () {
     return {
-      ticker: '',
+      ticker: 'AAPL',
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
+			loading: false,
 			highChartsData : [],
 			options: {
 				rangeSelector: {
@@ -44,7 +45,7 @@ export default {
         },
 
         series: [{
-            name: 'Test',
+            name: 'Closing Price',
             data: [],
             tooltip: {
                 valueDecimals: 2
@@ -55,8 +56,8 @@ export default {
     
   methods: {
 		getTickerJSON(){
-			this.ticker = ""; // just a test
-			var url = 'https://www.quandl.com/api/v3/datasets/WIKI/FB/data.json?api_key=' + this.apiKey
+			this.loading = true;
+			var url = 'https://www.quandl.com/api/v3/datasets/WIKI/' + this.ticker + '/data.json?api_key=' + this.apiKey
 			
 			axios.get(url).then(response => {
 				this.highChartsData = response.data.dataset_data.data.map(function(d){
@@ -69,6 +70,7 @@ export default {
 				// this.options.series.data = this.highChartsData;
 				console.log(this.highChartsData)
 				console.log(this.options.series[0].data)
+				this.loading = false;
 			})
 		}
 		

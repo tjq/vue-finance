@@ -10,6 +10,7 @@ import Highcharts from 'highcharts';
 
 import loadStock from 'highcharts/modules/stock';
 import loadMap from 'highcharts/modules/map';
+import 'element-ui/lib/theme-chalk/index.css'
 
 loadStock(Highcharts);
 loadMap(Highcharts);
