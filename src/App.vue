@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <header>
-      <span>vue-finance</span>
-    </header>
-    <main>
-      
-      <router-view></router-view>
-    </main>
+			<header>
+				<span>vue-finance</span>
+			</header>
+			<main>
+
+				<router-view></router-view>
+			</main>
   </div>
 </template>
 
