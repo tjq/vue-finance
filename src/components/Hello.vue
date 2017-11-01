@@ -2,10 +2,8 @@
   <div class="hello">
 		<el-container class="container">
 			
-			<el-aside width="200px">
-				<br>
-				<br>
-				<br>
+			<el-aside width="200px" style="background-color:#f3f3f3; margin-top:30px; position:fixed">
+
 				<el-input v-model="ticker"> 
 				
 				<template slot="append"><el-button type="text" @click="getTickerJSON()">Load</el-button></template>
@@ -13,18 +11,19 @@
 				
 			</el-aside>
 			
-			<el-main>
+			<el-main style="margin: 10px 0px 0px 200px">
 				<el-row :gutter=20>
 					<el-col :span=8> 
 						<el-card>
 							<p>Lastest Close</p>
-							<span style="font-size:2em">{{latestClose}}</span>
+							<span style="font-size:2em">{{highChartsData.slice(-1)[0][1]}}</span>
 						</el-card>
 					</el-col>
 					<el-col :span=8> 
 						<el-card>
 							<p>Percent Change</p>
-							<span class="tile-text" :style="(percentChange - 1) < 0 ? 'color:red' : 'color:green'">{{((percentChange - 1)*100).toFixed(2)}}%</span>
+							<span class="tile-text" :style="(percentChange - 1) < 0 ? 'color:red' : 'color:green'">{{(100- (highChartsData.slice(-1)[0][1]/highChartsData.slice(-2)[0][1])*100).toFixed(2)}}%</span>
+							<!-- ((percentChange - 1)*100).toFixed(2) -->
 						</el-card>
 					</el-col>
 					<el-col :span=8> 
@@ -41,6 +40,8 @@
 					<el-col :span=24>
 						<el-card v-loading="loading">
 							<highstock :options="options"></highstock>
+							<highstock :options="smaOptions"></highstock>
+							<highstock :options="rsiOptions"></highstock>
 						</el-card>
 					</el-col>
 				</el-row>
@@ -49,8 +50,8 @@
 				
 				<el-row :gutter=20>
 					<el-col :span=24>
-						<el-card v-loading="loading">
-							<highcharts :options="smaOptions"></highcharts>
+						<el-card>
+							
 						</el-card>
 					</el-col>
 				</el-row>
@@ -80,8 +81,10 @@ export default {
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
 			alphaVantageKey: '3VSR22AHR48O8GY3',
 			loading: false,
-			highChartsData : [],
+			highChartsData : [[1,1],[1,1]],
+			percentChange: 0,
 			smaData: [],
+			rsiData: [],
 			avgRating: 0,
 			options: {
 				rangeSelector: {
@@ -94,23 +97,62 @@ export default {
 
         series: [{
             name: 'Closing Price',
-            data: [],
+            data: [].reverse(),
             tooltip: {
                 valueDecimals: 2
             }
         }]},
 			
 			smaOptions : {
+				chart:{
+					height: 400
+				},
 				title: {
 					text: ''
 				},
+				
+				rangeSelector: {
+            selected: 2
+        },
 				
 				legend: {
 					enabled: false
 				},
 				
-				xAxis: {
-					type: 'datetime'
+				yAxis: {
+					title: {
+						text: ''
+					},
+					opposite: true
+				},
+				
+				series: [{
+					type: 'area',
+					data: []
+				}]
+			},
+			
+			rsiOptions : {
+				chart:{
+					height: 400
+				},
+				title: {
+					text: ''
+				},
+				
+				rangeSelector: {
+            selected: 2
+        },
+				
+				legend: {
+					enabled: false
+				},
+				
+				yAxis: {
+					title: {
+						text: ''
+					},
+					opposite: true
 				},
 				
 				series: [{
@@ -129,12 +171,14 @@ export default {
 
 			var arUrl = 'https://www.quandl.com/api/v3/datasets/CBARH/' + this.ticker + '.json?api_key=' + this.apiKey
 			
-			var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol='+ this.ticker + '&apikey=' + this.alphaVantageKey
+			var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol='+ this.ticker + '&outputsize=full&apikey=' + this.alphaVantageKey
 			
-			var smaUrl = 'https://www.alphavantage.co/query?function=MACD&symbol='+ this.ticker + '&interval=daily&series_type=open&apikey=' + this.alphaVantageKey;
+			var macdUrl = 'https://www.alphavantage.co/query?function=MACD&symbol='+ this.ticker + '&interval=daily&outputsize=180&series_type=open&apikey=' + this.alphaVantageKey;
+			
+			var rsiUrl = 'https://www.alphavantage.co/query?function=RSI&symbol=' + this.ticker + '&interval=daily&time_period=10&series_type=close&apikey=' +this.alphaVantageKey;
 			
 			axios.get(url).then(response => {
-				// console.log(response.data['Time Series (Daily)']) // debug
+			  console.log(response.data['Time Series (Daily)']) // debug
 				var arr = Object.values(response.data);
 				// console.log(arr[1])
 				var obj = response.data['Time Series (Daily)']
@@ -143,12 +187,11 @@ export default {
 					// console.log(obj[key]['5. adjusted close'])
 					this.highChartsData.push([new Date(key).getTime(), parseFloat(obj[key]['5. adjusted close'])]);
 				}
-				
-				console.log(this.highChartsData)
-				
 				// for some reason this comes in backwards ?
 				// highcharts wants it sorted
-			  this.options.series[0].data = this.highChartsData
+			  this.options.series[0].data = this.highChartsData.reverse()
+				console.log(this.options.series[0].data)
+				
 				this.loading = false;
 			})
 			
@@ -156,7 +199,7 @@ export default {
 				this.avgRating = response.data.dataset.data[0][2]
 			})
 			
-			axios.get(smaUrl).then(response => {
+			axios.get(macdUrl).then(response => {
 				this.smaData = [];
 				console.log(response.data)
 				var arr = Object.values(response.data);
@@ -168,7 +211,24 @@ export default {
 					this.smaData.push([new Date(key).getTime(), parseFloat(obj[key]['MACD_Hist'])]);
 					
 				}
-				this.smaOptions.series[0].data = this.smaData
+				this.smaOptions.series[0].data = this.smaData.reverse()
+				// console.log(this.smaData)
+				
+			})
+			
+			axios.get(rsiUrl).then(response => {
+				this.rsiData = [];
+				console.log(response.data)
+				var arr = Object.values(response.data);
+				// console.log(arr[1])
+				var obj = response.data['Technical Analysis: RSI']
+				for (var key in obj) {
+				  // console.log(key);
+					// console.log(obj[key]['5. adjusted close'])
+					this.rsiData.push([new Date(key).getTime(), parseFloat(obj[key]['RSI'])]);
+					
+				}
+				this.rsiOptions.series[0].data = this.rsiData.reverse()
 				// console.log(this.smaData)
 				
 			})
@@ -176,22 +236,6 @@ export default {
 		
 	},
 	
-	computed: {
-		latestClose(){
-			if(this.highChartsData.length < 2){
-				return 0;
-			}
-			var tmp = this.highChartsData
-			return tmp[0][1]
-		},
-		percentChange(){
-			if(this.highChartsData.length < 2){
-				return 1;
-			}
-			var tmp = this.highChartsData
-			return tmp[0][1]/tmp.slice(1)[0][1]
-		}
-	}
 }
 
 </script>
