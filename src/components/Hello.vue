@@ -12,9 +12,16 @@
 				<br>
 				<br>
 				
-				<el-card>
-					<p>MACD Buy Signal</p>
+				<el-card :style="macdBuySignal ? 'background-color:#77dd77' : 'background-color:#ff6961'">
+					<div class="signal-title">MACD Buy Signal</div>
 					{{macdBuySignal}}
+				</el-card>
+				
+				<br>
+				
+				<el-card :style="rsiBuySignal ? 'background-color:#77dd77' : 'background-color:#ff6961'">
+					<div class="signal-title">RSI Buy Signal</div>
+					{{rsiBuySignal}}
 				</el-card>
 				
 			</el-aside>
@@ -89,11 +96,13 @@ export default {
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
 			alphaVantageKey: '3VSR22AHR48O8GY3',
 			loading: false,
-			highChartsData : [[1,1],[1,1]],
+			highChartsData : [[1,1],[1,1]], // need this skeleton structure to 
+																			// avoid NaN error in pre-render calculations
 			percentChange: 0,
 			macdData: [],
 			rsiData: [],
 			macdBuySignal: false,
+			rsiBuySignal: false,
 			avgRating: 0,
 			options: {
 				rangeSelector: {
@@ -244,6 +253,10 @@ export default {
 					
 				}
 				this.rsiOptions.series[0].data = this.rsiData.reverse()
+				
+				if (this.rsiData.slice(-1)[0][1] >= 30 && this.rsiData.slice(-1)[0][1] <= 70){
+					this.rsiBuySignal = true;
+				}
 				// console.log(this.macdData)
 				
 			})
@@ -266,6 +279,9 @@ h1, h2 {
 .tile-text{
 	font-size: 2em;
 }
+	.signal-title{
+		font-size: 0.75em;
+	}
 .container {
   max-width: 980px;
   margin: 20px auto;
