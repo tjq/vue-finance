@@ -121,8 +121,7 @@ export default {
 			avgRating: 0,
 			options: {
 				rangeSelector: {
-            selected: 2,
-						enabled: false
+            selected: 2
         },
 
         title: {
@@ -146,8 +145,7 @@ export default {
 				},
 				
 				rangeSelector: {
-            selected: 2,
-						enabled: false
+            selected: 2
         },
 				
 				legend: {
@@ -176,8 +174,7 @@ export default {
 				},
 				
 				rangeSelector: {
-            selected: 2,
-						enabled: false
+            selected: 2
         },
 				
 				legend: {
@@ -297,24 +294,27 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 
-h1, h2 {
-  font-weight: normal;
-}
-.tile-text{
-	font-size: 2em;
-}
-	.signal-title{
-		font-size: 0.75em;
+	h1, h2 {
+		font-weight: normal;
 	}
-.container {
-  max-width: 980px;
-  margin: 20px auto;
-  @media screen and (max-width: 1050px) { 
-    width: 95%; 
-  }
-}
+	.tile-text{
+		font-size: 2em;
+	}
+		.signal-title{
+			font-size: 0.75em;
+		}
+	.container {
+		max-width: 980px;
+		margin: 20px auto;
+		@media screen and (max-width: 1050px) { 
+			width: 95%; 
+		}
+	}
+	.highcharts-range-selector-group{
+		display: none;
+	}
 	
-a {
-  color: #35495E;
-}
+	a {
+		color: #35495E;
+	}
 </style>
