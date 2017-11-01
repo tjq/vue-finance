@@ -2,12 +2,20 @@
   <div class="hello">
 		<el-container class="container">
 			
-			<el-aside width="200px" style="background-color:#f3f3f3; margin-top:30px; position:fixed">
+			<el-aside width="200px" style="margin-top:30px; position:fixed">
 
 				<el-input v-model="ticker"> 
 				
 				<template slot="append"><el-button type="text" @click="getTickerJSON()">Load</el-button></template>
 				</el-input>
+				
+				<br>
+				<br>
+				
+				<el-card>
+					<p>MACD Buy Signal</p>
+					{{macdBuySignal}}
+				</el-card>
 				
 			</el-aside>
 			
@@ -40,7 +48,7 @@
 					<el-col :span=24>
 						<el-card v-loading="loading">
 							<highstock :options="options"></highstock>
-							<highstock :options="smaOptions"></highstock>
+							<highstock :options="macdOptions"></highstock>
 							<highstock :options="rsiOptions"></highstock>
 						</el-card>
 					</el-col>
@@ -83,8 +91,9 @@ export default {
 			loading: false,
 			highChartsData : [[1,1],[1,1]],
 			percentChange: 0,
-			smaData: [],
+			macdData: [],
 			rsiData: [],
+			macdBuySignal: false,
 			avgRating: 0,
 			options: {
 				rangeSelector: {
@@ -103,7 +112,7 @@ export default {
             }
         }]},
 			
-			smaOptions : {
+			macdOptions : {
 				chart:{
 					height: 400
 				},
@@ -200,7 +209,7 @@ export default {
 			})
 			
 			axios.get(macdUrl).then(response => {
-				this.smaData = [];
+				this.macdData = [];
 				console.log(response.data)
 				var arr = Object.values(response.data);
 				// console.log(arr[1])
@@ -208,11 +217,17 @@ export default {
 				for (var key in obj) {
 				  // console.log(key);
 					// console.log(obj[key]['5. adjusted close'])
-					this.smaData.push([new Date(key).getTime(), parseFloat(obj[key]['MACD_Hist'])]);
+					this.macdData.push([new Date(key).getTime(), parseFloat(obj[key]['MACD_Hist'])]);
 					
 				}
-				this.smaOptions.series[0].data = this.smaData.reverse()
-				// console.log(this.smaData)
+				this.macdOptions.series[0].data = this.macdData.reverse()
+				// console.log(this.macdData)
+				
+				// TODO: abstract into a function called trend()
+				// then can be used for multiple indicators
+				if (this.macdData.slice(-1)[0][1] <= 0 && this.macdData.slice(-2)[0][1] < this.macdData.slice(-1)[0][1]){
+					this.macdBuySignal = true;
+				}
 				
 			})
 			
@@ -229,7 +244,7 @@ export default {
 					
 				}
 				this.rsiOptions.series[0].data = this.rsiData.reverse()
-				// console.log(this.smaData)
+				// console.log(this.macdData)
 				
 			})
 		}
