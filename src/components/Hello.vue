@@ -8,10 +8,25 @@
 				
 				<template slot="append"><el-button type="text" @click="getTickerJSON()">Load</el-button></template>
 				</el-input>
-				
 				<br>
 				<br>
-				
+				<el-button style="font-size:0.5em; padding: 4px 4px;" @click="setTimeSeriesRange(0)">
+					1M
+				</el-button>
+				<el-button style="font-size:0.5em; padding: 4px 4px;" @click="setTimeSeriesRange(1)">
+					3M
+				</el-button>
+				<el-button style="font-size:0.5em; padding: 4px 4px;" @click="setTimeSeriesRange(2)">
+					6M
+				</el-button>
+				<el-button style="font-size:0.5em; padding: 4px 4px;" @click="setTimeSeriesRange(3)">
+					YTD
+				</el-button>
+				<el-button style="font-size:0.5em; padding: 4px 4px;" @click="setTimeSeriesRange(5)">
+					ALL
+				</el-button>
+				<br>
+				<br>
 				<el-card :style="macdBuySignal ? 'background-color:#77dd77' : 'background-color:#ff6961'">
 					<div class="signal-title">MACD Buy Signal</div>
 					{{macdBuySignal}}
@@ -106,7 +121,8 @@ export default {
 			avgRating: 0,
 			options: {
 				rangeSelector: {
-            selected: 2
+            selected: 2,
+						enabled: false
         },
 
         title: {
@@ -130,7 +146,8 @@ export default {
 				},
 				
 				rangeSelector: {
-            selected: 2
+            selected: 2,
+						enabled: false
         },
 				
 				legend: {
@@ -159,7 +176,8 @@ export default {
 				},
 				
 				rangeSelector: {
-            selected: 2
+            selected: 2,
+						enabled: false
         },
 				
 				legend: {
@@ -260,6 +278,12 @@ export default {
 				// console.log(this.macdData)
 				
 			})
+		},
+		
+		setTimeSeriesRange(n){
+			this.options.rangeSelector.selected = n;
+			this.macdOptions.rangeSelector.selected = n;
+			this.rsiOptions.rangeSelector.selected = n;
 		}
 		
 	},
