@@ -34,11 +34,6 @@
 				
 				<br>
 				
-				<el-card :style="rsiBuySignal ? 'background-color:#77dd77' : 'background-color:#ff6961'">
-					<div class="signal-title">RSI Buy Signal</div>
-					{{rsiBuySignal}}
-				</el-card>
-				
 			</el-aside>
 			
 			<el-main style="margin: 10px 0px 0px 200px">
@@ -58,8 +53,8 @@
 					</el-col>
 					<el-col :span=8> 
 						<el-card>
-							<p>Analyst Rating</p>
-							<span style="font-size:2em">{{avgRating}}</span>
+							<p>Volume</p>
+							<span style="font-size:2em">{{highChartsData.slice(-1)[0][2]}}</span>
 						</el-card>
 					</el-col>
 				</el-row>
@@ -111,7 +106,7 @@ export default {
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
 			alphaVantageKey: '3VSR22AHR48O8GY3',
 			loading: false,
-			highChartsData : [[1,1],[1,1]], // need this skeleton structure to 
+			highChartsData : [[0,1,0],[0,0,0]], // need this skeleton structure to 
 																			// avoid NaN error in pre-render calculations
 			percentChange: 0,
 			macdData: [],
@@ -218,7 +213,7 @@ export default {
 				for (var key in obj) {
 				  // console.log(key);
 					// console.log(obj[key]['5. adjusted close'])
-					this.highChartsData.push([new Date(key).getTime(), parseFloat(obj[key]['5. adjusted close'])]);
+					this.highChartsData.push([new Date(key).getTime(), parseFloat(obj[key]['5. adjusted close']), parseFloat(obj[key]['6. volume'])]);
 				}
 				// for some reason this comes in backwards ?
 				// highcharts wants it sorted
@@ -226,10 +221,6 @@ export default {
 				console.log(this.options.series[0].data)
 				
 				this.loading = false;
-			})
-			
-			axios.get(arUrl).then(response => {
-				this.avgRating = response.data.dataset.data[0][2]
 			})
 			
 			axios.get(macdUrl).then(response => {
@@ -253,7 +244,9 @@ export default {
 					this.macdBuySignal = true;
 				}
 				
-			})
+			}, error => {console.log("What")}
+														 
+														 )
 			
 			axios.get(rsiUrl).then(response => {
 				this.rsiData = [];

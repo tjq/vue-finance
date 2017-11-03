@@ -1,12 +1,15 @@
 <template>
   <div id="app">
 			<header>
-				<span>vue-finance</span>
+				<el-container class="container" style="margin-top:0px">
+				<span style="font-weight:800;">tyler-apps</span>
+				</el-container>
 			</header>
 			<main>
 
 				<router-view></router-view>
 			</main>
+		
   </div>
 </template>
 
