@@ -184,7 +184,7 @@ export default {
 				},
 				
 				series: [{
-					type: 'area',
+					type: 'line',
 					data: []
 				}]
 			}
