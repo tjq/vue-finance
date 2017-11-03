@@ -190,6 +190,9 @@ export default {
 			}
     }
   },
+	mounted () {
+		this.getTickerJSON()
+	},
     
   methods: {
 		getTickerJSON(){
@@ -293,6 +296,7 @@ export default {
 	.tile-text{
 		font-size: 2em;
 	}
+
 		.signal-title{
 			font-size: 0.75em;
 		}
