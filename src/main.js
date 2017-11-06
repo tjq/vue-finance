@@ -26,7 +26,7 @@ Vue.config.productionTip = false
 
 const routes = [
     { path: '/', component: Hello },
-    { path: '/portfolio', component: Portfolio }
+    { path: '/portfolio/:uid', component: Portfolio, props: true }
 ];
 
 const router = new VueRouter({

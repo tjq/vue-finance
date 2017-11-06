@@ -20,7 +20,7 @@
 								<el-button @click="firebaseLogout">Logout</el-button>								
 							</el-dropdown-item>
 							<el-dropdown-item>
-								<router-link to="portfolio"><el-button>Portfolio</el-button></router-link>
+								<router-link :to="'portfolio/' + uid"><el-button>Portfolio</el-button></router-link>
 							</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
