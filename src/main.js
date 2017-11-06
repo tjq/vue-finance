@@ -2,11 +2,13 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-import router from './router'
+import VueRouter from 'vue-router'
 import Element from 'element-ui'
 import firebase from 'firebase'
 import VueHighcharts from 'vue-highcharts';
 import Highcharts from 'highcharts';
+import Hello from './components/Hello';
+import Portfolio from './components/Portfolio';
 
 import loadStock from 'highcharts/modules/stock';
 import loadMap from 'highcharts/modules/map';
@@ -18,12 +20,25 @@ loadMap(Highcharts);
 Vue.use(VueHighcharts, { Highcharts });
 
 Vue.use(Element)
+Vue.use(VueRouter)
 Vue.config.productionTip = false
+
+
+const routes = [
+    { path: '/', component: Hello },
+    { path: '/portfolio', component: Portfolio }
+];
+
+const router = new VueRouter({
+  routes, // short for routes: routes
+  mode: 'history'
+})
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App }
+  components: { App },
+	router: router
 })

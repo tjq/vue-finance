@@ -2,7 +2,7 @@
   <div id="app">
 			<header>
 				<el-container class="container" style="margin-top:0px">
-					<span style="font-weight:800;">tyler-apps</span>
+					<span style="font-weight:800; color: white"><a href="/" style="color: white; text-decoration: none">tyler-apps</a></span>
 					<el-dropdown style="margin-left:80%" v-show="email==''">
 						<span class="el-dropdown-link" style="color: white">
 							Login<i class="el-icon-arrow-down el-icon--right"></i>
@@ -17,7 +17,10 @@
 						</span>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item>
-								<el-button @click="firebaseLogout">Logout</el-button>
+								<el-button @click="firebaseLogout">Logout</el-button>								
+							</el-dropdown-item>
+							<el-dropdown-item>
+								<router-link to="portfolio"><el-button>Portfolio</el-button></router-link>
 							</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
