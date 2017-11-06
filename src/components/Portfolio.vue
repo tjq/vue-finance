@@ -3,36 +3,27 @@
 		<el-container class="container">
 			
 			<el-main>
+				<el-row>
+					<el-col :span=24>
+						<el-input v-model="tickerToAdd"></el-input>
+						<el-input v-model="sharesToAdd"></el-input>
+						<el-button type="text" @click="addToPortfolio"> Add </el-button>
+					</el-col>
+				</el-row>
 				<el-row :gutter=20>
-					<el-col :span=24> 
+					<el-col :span=24>
 						<el-card>
-							{{uid}}
-							<el-table>
-							
+							 <el-table :data="portfolio" style="width: 100%">
+								<el-table-column prop="ticker" label="Ticker" width="180">
+								</el-table-column>
+								<el-table-column prop="shares" label="# Shares" width="180">
+								</el-table-column>
 							</el-table>
 						</el-card>
 					</el-col>
 				</el-row>
 				
 				<br>
-				
-				<el-row :gutter=20>
-					<el-col :span=24>
-						<el-card>
-							
-						</el-card>
-					</el-col>
-				</el-row>
-				
-				<br>
-				
-				<el-row :gutter=20>
-					<el-col :span=24>
-						<el-card>
-							
-						</el-card>
-					</el-col>
-				</el-row>
 			</el-main>
 			
 		</el-container>
@@ -45,8 +36,11 @@
 
 <script>
 import axios from 'axios';
+import firebase from 'firebase';
 import VueHighcharts from 'vue-highcharts';
 import Highcharts from 'highcharts';
+
+var database = firebase.database();
 	
 export default {
 	components: {
@@ -56,16 +50,42 @@ export default {
 	name: 'hello',
   data () {
     return {
-      
+      portfolio: [],
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
 			alphaVantageKey: '3VSR22AHR48O8GY3',
+			tickerToAdd: '',
+			sharesToAdd: 0
     }
   },
 	mounted () {
-		// this.getTickerJSON()
+		this.getPortfolio()
 	},
     
   methods: {
+		addToPortfolio(){
+			database.ref('users/' + this.uid).push({
+				ticker: this.tickerToAdd,
+				shares: this.sharesToAdd
+			})
+		},
+		
+		getPortfolio(){
+			var portfolio = [];
+			database.ref('users/' + this.uid).once('value').then(function(snapshot) {
+							snapshot.forEach(function(userSnapshot) {
+									var username = userSnapshot.val()
+									portfolio.push({
+											shares: username.shares,
+											ticker: username.ticker
+									})
+					})
+							console.log(portfolio)
+			})
+			
+			this.portfolio = portfolio;
+			
+			
+		},
 		getTickerJSON(){
 			
 			var initID = 'aa5fe804783ea51b5386be52d35ccabf'
