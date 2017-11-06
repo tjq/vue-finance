@@ -63,9 +63,9 @@
 				
 				<el-row :gutter=20>
 					<el-col :span=24>
-						<el-card v-loading="loading">
-							<highstock :options="options"></highstock>
-							<highstock :options="macdOptions"></highstock>
+						<el-card>
+							<highstock v-loading="priceLoading" :options="options"></highstock>
+							<highstock v-loading="macdLoading" :options="macdOptions"></highstock>
 							<highstock :options="rsiOptions"></highstock>
 						</el-card>
 					</el-col>
@@ -105,7 +105,8 @@ export default {
       ticker: 'AAPL',
 			apiKey: 'WyAYWfaPWbL7iU49Rfo6',
 			alphaVantageKey: '3VSR22AHR48O8GY3',
-			loading: false,
+			priceLoading: true,
+			macdLoading: true,
 			highChartsData : [[0,1,0],[0,0,0]], // need this skeleton structure to 
 																			// avoid NaN error in pre-render calculations
 			percentChange: 0,
@@ -196,9 +197,13 @@ export default {
     
   methods: {
 		getTickerJSON(){
+			
+			var initID = 'aa5fe804783ea51b5386be52d35ccabf'
+			var initPW = '478a2b3747ed5a9742a05c11679dbe4a'
 			this.highChartsData = [];
 			
-			this.loading = true;
+			this.priceLoading = true;
+			this.macdLoading = true;
 
 			var arUrl = 'https://www.quandl.com/api/v3/datasets/CBARH/' + this.ticker + '.json?api_key=' + this.apiKey
 			
@@ -223,7 +228,7 @@ export default {
 			  this.options.series[0].data = this.highChartsData.reverse()
 				console.log(this.options.series[0].data)
 				
-				this.loading = false;
+				this.priceLoading = false;
 			})
 			
 			axios.get(macdUrl).then(response => {
@@ -246,6 +251,8 @@ export default {
 				if (this.macdData.slice(-1)[0][1] <= 0 && this.macdData.slice(-2)[0][1] < this.macdData.slice(-1)[0][1]){
 					this.macdBuySignal = true;
 				}
+				
+				this.macdLoading = false;
 				
 			}, error => {console.log("What")}
 														 
