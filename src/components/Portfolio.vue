@@ -7,7 +7,9 @@
 				<br>
 				<el-button style="width: 100%" @click="addToPortfolio"> Add </el-button>
 				<br>
-
+				<div v-for="series in options.series">
+					{{series.name}}
+				</div>
 			</el-aside>
 			<el-main style="margin: 10px 0px 0px 200px">
 				<el-row :gutter=20>
@@ -129,13 +131,6 @@ export default {
 		
 		
 		// this.getPortfolio()
-		if (this.portfolio.length > 1){
-			console.log("Word")
-			this.portfolio.forEach( (e) => {
-				console.log(e[0])
-				this.getCurrentPrice(e.ticker)
-			})
-		}
 		
 		
 	},
@@ -196,11 +191,12 @@ export default {
 		},
 		
 		getCurrentPrice(t){
-			var tmp = []
+			var tmp = [];
 			console.log(t)
 			var that = this;
-			var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol='+ t + '&outputsize=10&apikey=3VSR22AHR48O8GY3';
+			var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol='+ t + '&outputsize=compact&apikey=3VSR22AHR48O8GY3';
 			axios.get(url).then(response => {
+				
 				this.isLoading = true;
 				var obj = response.data['Time Series (Daily)']
 				for (var key in obj) {
@@ -208,6 +204,8 @@ export default {
 					// console.log(obj[key]['5. adjusted close'])
 					tmp.push([new Date(key).getTime(), parseFloat(obj[key]['5. adjusted close']) ]);
 				}
+				// console.log(tmp)
+				
 				this.options.series.push({
 					name: t,
 					data: tmp.reverse(),
@@ -216,15 +214,13 @@ export default {
 					}
 				})
 				
-				console.log(tmp.slice(-1)[0][1])
-				this.test.push({
-					price: tmp.slice(-1)[0][1],
-					ticker: t
-				})
+				console.log(this.test)
 				
 			})
 			
-			return 
+			
+				
+			
 
 		},
 		
