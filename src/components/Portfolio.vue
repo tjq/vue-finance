@@ -5,11 +5,10 @@
 				<el-input v-model="tickerToAdd" placeholder="Ticker"></el-input>
 				<el-input-number style="width: 100%" v-model="sharesToAdd" placeholder="# Shares"></el-input-number>
 				<br>
+				<br>
 				<el-button style="width: 100%" @click="addToPortfolio"> Add </el-button>
 				<br>
-				<div v-for="series in options.series">
-					{{series.name}}
-				</div>
+				
 			</el-aside>
 			<el-main style="margin: 10px 0px 0px 200px">
 				<el-row :gutter=20>
@@ -192,6 +191,7 @@ export default {
 		
 		getCurrentPrice(t){
 			var tmp = [];
+			var prevKey = '';
 			console.log(t)
 			var that = this;
 			var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol='+ t + '&outputsize=compact&apikey=3VSR22AHR48O8GY3';
@@ -200,9 +200,14 @@ export default {
 				this.isLoading = true;
 				var obj = response.data['Time Series (Daily)']
 				for (var key in obj) {
+					if (prevKey == ''){
+						prevKey = key;
+					}
+					
 					// console.log(key);
 					// console.log(obj[key]['5. adjusted close'])
-					tmp.push([new Date(key).getTime(), parseFloat(obj[key]['5. adjusted close']) ]);
+					tmp.push([new Date(key).getTime(), (1-parseFloat(obj[key]['5. adjusted close'])/parseFloat(obj[prevKey]['5. adjusted close']))*100 ]);
+					prevKey = key;
 				}
 				// console.log(tmp)
 				
